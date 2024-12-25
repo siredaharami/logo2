@@ -34,6 +34,7 @@ async def handle_photo(client, message):
         'bg_color': (255, 255, 255, 0),
         'bg_opacity': 1.0,
         'emboss_enabled': False,
+        'text_opacity': 1.0,
         'third_text': {
             'text': '',
             'enabled': False,
@@ -80,6 +81,8 @@ async def handle_text(client, message):
                         InlineKeyboardButton("Increase Size 4×", callback_data='increase_font_4x'), 
                         InlineKeyboardButton("Decrease Size 4×", callback_data='decrease_font_4x')
                     ],
+                    [InlineKeyboardButton("Opacity Options", callback_data='opacity_options')],
+                    [InlineKeyboardButton("Font Options", callback_data='font_options')],
                     [InlineKeyboardButton("3rd Text Options", callback_data='third_text_options')]
                 ]
             )
@@ -175,7 +178,6 @@ async def handle_callback_query(client, callback_query):
                 )
             )
             await callback_query.answer()
-
         elif data == 'toggle_stroke':
             users_data[chat_id]['stroke_enabled'] = not users_data[chat_id].get('stroke_enabled', False)
             status = "enabled" if users_data[chat_id]['stroke_enabled'] else "disabled"
@@ -200,7 +202,24 @@ async def handle_callback_query(client, callback_query):
                     [
                         [InlineKeyboardButton("Black", callback_data='stroke_color_black')],
                         [InlineKeyboardButton("Red", callback_data='stroke_color_red')],
-                        [InlineKeyboardButton("Green", callback_data='stroke_color_green')]
+                        [InlineKeyboardButton("Green", callback_data='stroke_color_green')],
+                        [InlineKeyboardButton("Blue", callback_data='stroke_color_blue')],
+                        [InlineKeyboardButton("Yellow", callback_data='stroke_color_yellow')],
+                        [InlineKeyboardButton("Purple", callback_data='stroke_color_purple')],
+                        [InlineKeyboardButton("Orange", callback_data='stroke_color_orange')],
+                        [InlineKeyboardButton("Pink", callback_data='stroke_color_pink')],
+                        [InlineKeyboardButton("Brown", callback_data='stroke_color_brown')],
+                        [InlineKeyboardButton("Gray", callback_data='stroke_color_gray')],
+                        [InlineKeyboardButton("Cyan", callback_data='stroke_color_cyan')],
+                        [InlineKeyboardButton("Magenta", callback_data='stroke_color_magenta')],
+                        [InlineKeyboardButton("Lime", callback_data='stroke_color_lime')],
+                        [InlineKeyboardButton("Maroon", callback_data='stroke_color_maroon')],
+                        [InlineKeyboardButton("Olive", callback_data='stroke_color_olive')],
+                        [InlineKeyboardButton("Navy", callback_data='stroke_color_navy')],
+                        [InlineKeyboardButton("Teal", callback_data='stroke_color_teal')],
+                        [InlineKeyboardButton("Coral", callback_data='stroke_color_coral')],
+                        [InlineKeyboardButton("Indigo", callback_data='stroke_color_indigo')],
+                        [InlineKeyboardButton("Turquoise", callback_data='stroke_color_turquoise')]
                     ]
                 )
             )
@@ -226,7 +245,23 @@ async def handle_callback_query(client, callback_query):
                         [InlineKeyboardButton("Black", callback_data='shadow_color_black')],
                         [InlineKeyboardButton("Gray", callback_data='shadow_color_gray')],
                         [InlineKeyboardButton("Red", callback_data='shadow_color_red')],
-                        [InlineKeyboardButton("Green", callback_data='shadow_color_green')]
+                        [InlineKeyboardButton("Green", callback_data='shadow_color_green')],
+                        [InlineKeyboardButton("Blue", callback_data='shadow_color_blue')],
+                        [InlineKeyboardButton("Yellow", callback_data='shadow_color_yellow')],
+                        [InlineKeyboardButton("Purple", callback_data='shadow_color_purple')],
+                        [InlineKeyboardButton("Orange", callback_data='shadow_color_orange')],
+                        [InlineKeyboardButton("Pink", callback_data='shadow_color_pink')],
+                        [InlineKeyboardButton("Brown", callback_data='shadow_color_brown')],
+                        [InlineKeyboardButton("Cyan", callback_data='shadow_color_cyan')],
+                        [InlineKeyboardButton("Magenta", callback_data='shadow_color_magenta')],
+                        [InlineKeyboardButton("Lime", callback_data='shadow_color_lime')],
+                        [InlineKeyboardButton("Maroon", callback_data='shadow_color_maroon')],
+                        [InlineKeyboardButton("Olive", callback_data='shadow_color_olive')],
+                        [InlineKeyboardButton("Navy", callback_data='shadow_color_navy')],
+                        [InlineKeyboardButton("Teal", callback_data='shadow_color_teal')],
+                        [InlineKeyboardButton("Coral", callback_data='shadow_color_coral')],
+                        [InlineKeyboardButton("Indigo", callback_data='shadow_color_indigo')],
+                        [InlineKeyboardButton("Turquoise", callback_data='shadow_color_turquoise')]
                     ]
                 )
             )
@@ -264,12 +299,27 @@ async def handle_callback_query(client, callback_query):
                         [InlineKeyboardButton("Black", callback_data='inner_shadow_color_black')],
                         [InlineKeyboardButton("Gray", callback_data='inner_shadow_color_gray')],
                         [InlineKeyboardButton("Red", callback_data='inner_shadow_color_red')],
-                        [InlineKeyboardButton("Green", callback_data='inner_shadow_color_green')]
+                        [InlineKeyboardButton("Green", callback_data='inner_shadow_color_green')],
+                        [InlineKeyboardButton("Blue", callback_data='inner_shadow_color_blue')],
+                        [InlineKeyboardButton("Yellow", callback_data='inner_shadow_color_yellow')],
+                        [InlineKeyboardButton("Purple", callback_data='inner_shadow_color_purple')],
+                        [InlineKeyboardButton("Orange", callback_data='inner_shadow_color_orange')],
+                        [InlineKeyboardButton("Pink", callback_data='inner_shadow_color_pink')],
+                        [InlineKeyboardButton("Brown", callback_data='inner_shadow_color_brown')],
+                        [InlineKeyboardButton("Cyan", callback_data='inner_shadow_color_cyan')],
+                        [InlineKeyboardButton("Magenta", callback_data='inner_shadow_color_magenta')],
+                        [InlineKeyboardButton("Lime", callback_data='inner_shadow_color_lime')],
+                        [InlineKeyboardButton("Maroon", callback_data='inner_shadow_color_maroon')],
+                        [InlineKeyboardButton("Olive", callback_data='inner_shadow_color_olive')],
+                        [InlineKeyboardButton("Navy", callback_data='inner_shadow_color_navy')],
+                        [InlineKeyboardButton("Teal", callback_data='inner_shadow_color_teal')],
+                        [InlineKeyboardButton("Coral", callback_data='inner_shadow_color_coral')],
+                        [InlineKeyboardButton("Indigo", callback_data='inner_shadow_color_indigo')],
+                        [InlineKeyboardButton("Turquoise", callback_data='inner_shadow_color_turquoise')]
                     ]
                 )
             )
             await callback_query.answer()
-
         elif data == 'increase_inner_shadow_offset':
             current_offset = users_data[chat_id].get('inner_shadow_offset', (5, 5))
             new_offset = (current_offset[0] + 1, current_offset[1] + 1)
@@ -286,7 +336,6 @@ async def handle_callback_query(client, callback_query):
             await callback_query.message.reply_text(
                 "3rd Text Options:",
                 reply_markup=InlineKeyboardMarkup(
-                    [
                         [InlineKeyboardButton("Enable/Disable 3rd Text", callback_data='toggle_third_text')],
                         [InlineKeyboardButton("Change 3rd Text Color", callback_data='third_text_colors')],
                         [
@@ -303,182 +352,125 @@ async def handle_callback_query(client, callback_query):
             status = "enabled" if users_data[chat_id]['third_text']['enabled'] else "disabled"
             await callback_query.answer(f"3rd Text {status}!", show_alert=True)
 
-        elif data == 'third_text_colors':
+        elif data == 'font_options':
             await callback_query.message.reply_text(
-                "Select 3rd Text Color:",
+                "Select Font:",
                 reply_markup=InlineKeyboardMarkup(
                     [
-                        [InlineKeyboardButton("Black", callback_data='third_text_color_black')],
-                        [InlineKeyboardButton("Red", callback_data='third_text_color_red')],
-                        [InlineKeyboardButton("Green", callback_data='third_text_color_green')],
-                        [InlineKeyboardButton("Blue", callback_data='third_text_color_blue')]
+                        [InlineKeyboardButton("Font 1", callback_data='font_1')],
+                        [InlineKeyboardButton("Font 2", callback_data='font_2')],
+                        [InlineKeyboardButton("Font 3", callback_data='font_3')],
+                        [InlineKeyboardButton("Font 4", callback_data='font_4')],
+                        [InlineKeyboardButton("Font 5", callback_data='font_5')],
+                        [InlineKeyboardButton("Font 6", callback_data='font_6')],
+                        [InlineKeyboardButton("Font 7", callback_data='font_7')],
+                        [InlineKeyboardButton("Font 8", callback_data='font_8')],
+                        [InlineKeyboardButton("Font 9", callback_data='font_9')],
+                        [InlineKeyboardButton("Font 10", callback_data='font_10')]
                     ]
                 )
             )
             await callback_query.answer()
 
-        elif data.startswith('third_text_color_'):
-            users_data[chat_id]['third_text']['color'] = data.split('_')[3]
-            await callback_query.answer(f"3rd Text color set to {users_data[chat_id]['third_text']['color']}!", show_alert=True)
+        elif data.startswith('font_'):
+            font_number = int(data.split('_')[1])
+            font_paths = [
+                "path/to/font1.ttf",
+                "path/to/font2.ttf",
+                "path/to/font3.ttf",
+                "path/to/font4.ttf",
+                "path/to/font5.ttf",
+                "path/to/font6.ttf",
+                "path/to/font7.ttf",
+                "path/to/font8.ttf",
+                "path/to/font9.ttf",
+                "path/to/font10.ttf"
+            ]
+            users_data[chat_id]['font_path'] = font_paths[font_number - 1]
+            await callback_query.answer(f"Font set to Font {font_number}!", show_alert=True)
 
-        elif data == 'increase_third_text_size':
-            users_data[chat_id]['third_text']['size'] += 10
-            await callback_query.answer(f"3rd Text size increased to {users_data[chat_id]['third_text']['size']}!", show_alert=True)
+        elif data == 'opacity_options':
+            await callback_query.message.reply_text(
+                "Adjust Opacity:",
+                reply_markup=InlineKeyboardMarkup(
+                    [
+                        [InlineKeyboardButton("-", callback_data='decrease_opacity')],
+                        [InlineKeyboardButton("+", callback_data='increase_opacity')]
+                    ]
+                )
+            )
+            await callback_query.answer()
 
-        elif data == 'decrease_third_text_size':
-            if users_data[chat_id]['third_text']['size'] > 10:
-                users_data[chat_id]['third_text']['size'] -= 10
-                await callback_query.answer(f"3rd Text size decreased to {users_data[chat_id]['third_text']['size']}!", show_alert=True)
+        elif data == 'increase_opacity':
+            if users_data[chat_id]['bg_opacity'] < 1.0:
+                users_data[chat_id]['bg_opacity'] += 0.1
+                await callback_query.answer(f"Opacity increased to {users_data[chat_id]['bg_opacity'] * 100}%", show_alert=True)
             else:
-                await callback_query.answer("3rd Text size cannot be less than 10!", show_alert=True)
+                await callback_query.answer("Opacity is already at maximum!", show_alert=True)
 
-        elif data == 'background_options':
+        elif data == 'decrease_opacity':
+            if users_data[chat_id]['bg_opacity'] > 0.1:
+                users_data[chat_id]['bg_opacity'] -= 0.1
+                await callback_query.answer(f"Opacity decreased to {users_data[chat_id]['bg_opacity'] * 100}%", show_alert=True)
+            else:
+                await callback_query.answer("Opacity is already at minimum!", show_alert=True)
+
+        elif data == 'color_options':
             await callback_query.message.reply_text(
-                "Background Options:",
+                "Select Color:",
                 reply_markup=InlineKeyboardMarkup(
                     [
-                        [InlineKeyboardButton("Change Background Color", callback_data='bg_colors')],
-                        [InlineKeyboardButton("Change Background Opacity", callback_data='bg_opacity')]
+                        [InlineKeyboardButton("Red", callback_data='color_red')],
+                        [InlineKeyboardButton("Green", callback_data='color_green')],
+                        [InlineKeyboardButton("Blue", callback_data='color_blue')],
+                        [InlineKeyboardButton("Black", callback_data='color_black')],
+                        [InlineKeyboardButton("Yellow", callback_data='color_yellow')],
+                        [InlineKeyboardButton("Cyan", callback_data='color_cyan')],
+                        [InlineKeyboardButton("Magenta", callback_data='color_magenta')],
+                        [InlineKeyboardButton("White", callback_data='color_white')],
+                        [InlineKeyboardButton("Gray", callback_data='color_gray')],
+                        [InlineKeyboardButton("Purple", callback_data='color_purple')],
+                        [InlineKeyboardButton("Brown", callback_data='color_brown')],
+                        [InlineKeyboardButton("Orange", callback_data='color_orange')],
+                        [InlineKeyboardButton("Pink", callback_data='color_pink')],
+                        [InlineKeyboardButton("Lime", callback_data='color_lime')],
+                        [InlineKeyboardButton("Maroon", callback_data='color_maroon')],
+                        [InlineKeyboardButton("Navy", callback_data='color_navy')],
+                        [InlineKeyboardButton("Teal", callback_data='color_teal')],
+                        [InlineKeyboardButton("Olive", callback_data='color_olive')],
+                        [InlineKeyboardButton("Silver", callback_data='color_silver')],
+                        [InlineKeyboardButton("Gold", callback_data='color_gold')]
                     ]
                 )
             )
             await callback_query.answer()
 
-        elif data == 'bg_colors':
-            await callback_query.message.reply_text(
-                "Select Background Color:",
-                reply_markup=InlineKeyboardMarkup(
-                    [
-                        [InlineKeyboardButton("White", callback_data='bg_color_white')],
-                        [InlineKeyboardButton("Black", callback_data='bg_color_black')],
-                        [InlineKeyboardButton("Red", callback_data='bg_color_red')],
-                        [InlineKeyboardButton("Green", callback_data='bg_color_green')],
-                        [InlineKeyboardButton("Blue", callback_data='bg_color_blue')]
-                    ]
-                )
-            )
-            await callback_query.answer()
-
-        elif data.startswith('bg_color_'):
-            color_name = data.split('_')[2]
+        elif data.startswith('color_'):
+            color_name = data.split('_')[1]
             color_map = {
-                'white': (255, 255, 255, 0),
-                'black': (0, 0, 0, 0),
-                'red': (255, 0, 0, 0),
-                'green': (0, 255, 0, 0),
-                'blue': (0, 0, 255, 0)
+                'red': 'red',
+                'green': 'green',
+                'blue': 'blue',
+                'black': 'black',
+                'yellow': 'yellow',
+                'cyan': 'cyan',
+                'magenta': 'magenta',
+                'white': 'white',
+                'gray': 'gray',
+                'purple': 'purple',
+                'brown': 'brown',
+                'orange': 'orange',
+                'pink': 'pink',
+                'lime': 'lime',
+                'maroon': 'maroon',
+                'navy': 'navy',
+                'teal': 'teal',
+                'olive': 'olive',
+                'silver': 'silver',
+                'gold': 'gold'
             }
-            users_data[chat_id]['bg_color'] = color_map[color_name]
-            await callback_query.answer(f"Background color set to {color_name}!", show_alert=True)
-
-        elif data == 'bg_opacity':
-            await callback_query.message.reply_text(
-                "Select Background Opacity:",
-                reply_markup=InlineKeyboardMarkup(
-                    [
-                        [InlineKeyboardButton("10%", callback_data='bg_opacity_10')],
-                        [InlineKeyboardButton("30%", callback_data='bg_opacity_30')],
-                        [InlineKeyboardButton("50%", callback_data='bg_opacity_50')],
-                        [InlineKeyboardButton("70%", callback_data='bg_opacity_70')],
-                        [InlineKeyboardButton("90%", callback_data='bg_opacity_90')]
-                    ]
-                )
-            )
-            await callback_query.answer()
-
-        elif data.startswith('bg_opacity_'):
-            opacity = int(data.split('_')[2]) / 100.0
-            users_data[chat_id]['bg_opacity'] = opacity
-            await callback_query.answer(f"Background opacity set to {opacity * 100}%!", show_alert=True)
-
-        # Background color options
-        elif data.startswith('bg_color_'):
-            bg_color = data.split('_')[2]
-            users_data[chat_id]['bg_color'] = bg_color
-            await callback_query.answer(f"Background color set to {bg_color}!", show_alert=True)
-
-        elif data == '3rd_text_options':
-            await callback_query.message.reply_text(
-                "3rd Text Options:",
-                reply_markup=InlineKeyboardMarkup(
-                    [
-                        [InlineKeyboardButton("Enable/Disable 3rd Text", callback_data='toggle_3rd_text')],
-                        [InlineKeyboardButton("Change 3rd Text Color", callback_data='3rd_text_color')],
-                        [InlineKeyboardButton("Change 3rd Text Size", callback_data='3rd_text_size')]
-                    ]
-                )
-            )
-            await callback_query.answer()
-
-        elif data == 'toggle_3rd_text':
-            users_data[chat_id]['3rd_text_enabled'] = not users_data[chat_id].get('3rd_text_enabled', False)
-            status = "enabled" if users_data[chat_id]['3rd_text_enabled'] else "disabled"
-            await callback_query.answer(f"3rd Text {status}!", show_alert=True)
-
-        elif data == '3rd_text_color':
-            await callback_query.message.reply_text(
-                "Select 3rd Text Color:",
-                reply_markup=InlineKeyboardMarkup(
-                    [
-                        [InlineKeyboardButton("Black", callback_data='3rd_text_color_black')],
-                        [InlineKeyboardButton("Red", callback_data='3rd_text_color_red')],
-                        [InlineKeyboardButton("Green", callback_data='3rd_text_color_green')]
-                    ]
-                )
-            )
-            await callback_query.answer()
-
-        elif data.startswith('3rd_text_color_'):
-            color = data.split('_')[3]
-            users_data[chat_id]['3rd_text_color'] = color
-            await callback_query.answer(f"3rd Text color set to {color}!", show_alert=True)
-
-        elif data == '3rd_text_size':
-            await callback_query.message.reply_text(
-                "Change 3rd Text Size:",
-                reply_markup=InlineKeyboardMarkup(
-                    [
-                        [InlineKeyboardButton("Increase Size", callback_data='increase_3rd_text_size')],
-                        [InlineKeyboardButton("Decrease Size", callback_data='decrease_3rd_text_size')]
-                    ]
-                )
-            )
-            await callback_query.answer()
-
-        elif data == 'increase_3rd_text_size':
-            users_data[chat_id]['3rd_text_size'] += 10
-            await callback_query.answer(f"3rd Text size increased to {users_data[chat_id]['3rd_text_size']}!", show_alert=True)
-
-        elif data == 'decrease_3rd_text_size':
-            current_size = users_data[chat_id].get('3rd_text_size', 20)
-            if current_size > 10:
-                users_data[chat_id]['3rd_text_size'] -= 10
-                await callback_query.answer(f"3rd Text size decreased to {users_data[chat_id]['3rd_text_size']}!", show_alert=True)
-            else:
-                await callback_query.answer("3rd Text size cannot be less than 10!", show_alert=True)
-
-        elif data == 'emboss_options':
-            await callback_query.message.reply_text(
-                "Emboss Options:",
-                reply_markup=InlineKeyboardMarkup(
-                    [
-                        [InlineKeyboardButton("Enable/Disable Emboss", callback_data='toggle_emboss')],
-                        [InlineKeyboardButton("Text Cut 90°", callback_data='text_cut_90')],
-                        [InlineKeyboardButton("Text Cut 100°", callback_data='text_cut_100')]
-                    ]
-                )
-            )
-            await callback_query.answer()
-
-        elif data == 'toggle_emboss':
-            users_data[chat_id]['emboss_enabled'] = not users_data[chat_id].get('emboss_enabled', False)
-            status = "enabled" if users_data[chat_id]['emboss_enabled'] else "disabled"
-            await callback_query.answer(f"Emboss {status}!", show_alert=True)
-
-        elif data.startswith('text_cut_'):
-            angle = int(data.split('_')[2])
-            users_data[chat_id]['text_cut_angle'] = angle
-            await callback_query.answer(f"Text cut angle set to {angle}°!", show_alert=True)
+            users_data[chat_id]['color'] = color_map[color_name]
+            await callback_query.answer(f"Text color set to {color_name}!", show_alert=True)
 
         await send_edited_image(client, chat_id)
 
