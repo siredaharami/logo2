@@ -8,7 +8,6 @@ api_id = 25742938
 api_hash = "b35b715fe8dc0a58e8048988286fc5b6"
 bot_token = "7796646089:AAG3yoXJRSI-D2A5w1kPraju_qpL_Xt3JO8"
 
-
 app = Client("logo_maker_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 
 users_data = {}
@@ -20,8 +19,11 @@ async def start(client, message):
 @app.on_message(filters.photo)
 async def handle_photo(client, message):
     # Download the image
-    photo = await message.download_as_bytearray()
-    users_data[message.chat.id] = {'photo': photo, 'position': (10, 10)}
+    photo = await message.download()
+    with open(photo, "rb") as file:
+        photo_bytes = file.read()
+
+    users_data[message.chat.id] = {'photo': photo_bytes, 'position': (10, 10)}
     await message.reply_text("I got the image! Now send me the text you want to add to the image.")
 
 @app.on_message(filters.text & ~filters.command("start"))
