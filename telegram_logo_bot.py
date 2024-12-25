@@ -56,7 +56,7 @@ async def handle_callback_query(client, callback_query):
         # Open image and draw text
         image = Image.open(photo_path)
         draw = ImageDraw.Draw(image)
-        font = ImageFont.truetype("arial.ttf", 40)
+        font = ImageFont.truetype("font.ttf", 40)
 
         # Draw the text on the image
         draw.text((10, 10), text, fill=color, font=font)
