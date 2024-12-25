@@ -47,6 +47,8 @@ async def handle_text(client, message):
                     [InlineKeyboardButton("♥️ Red", callback_data='color_red'), InlineKeyboardButton("💚 Green", callback_data='color_green')],
                     [InlineKeyboardButton("💙 Blue", callback_data='color_blue'), InlineKeyboardButton("🖤 Black", callback_data='color_black')],
                     [InlineKeyboardButton("Stroke Options", callback_data='stroke_options')],
+                    [InlineKeyboardButton("Shadow Options", callback_data='shadow_options')],
+                    [InlineKeyboardButton("Inner Shadow Options", callback_data='inner_shadow_options')],
                     [
                         InlineKeyboardButton("⬆️", callback_data='move_up'),
                         InlineKeyboardButton("⬅️", callback_data='move_left'),
@@ -66,22 +68,6 @@ async def handle_text(client, message):
                     [
                         InlineKeyboardButton("Increase Size 4×", callback_data='increase_font_4x'), 
                         InlineKeyboardButton("Decrease Size 4×", callback_data='decrease_font_4x')
-                    ],
-                    [
-                        InlineKeyboardButton("Enable Shadow", callback_data='toggle_shadow'),
-                        InlineKeyboardButton("Enable Inner Shadow", callback_data='toggle_inner_shadow')
-                    ],
-                    [
-                        InlineKeyboardButton("Shadow Color: Gray", callback_data='shadow_color_gray'),
-                        InlineKeyboardButton("Shadow Color: Black", callback_data='shadow_color_black')
-                    ],
-                    [
-                        InlineKeyboardButton("Increase Shadow Size", callback_data='shadow_size_5'),
-                        InlineKeyboardButton("Decrease Shadow Size", callback_data='shadow_size_2')
-                    ],
-                    [
-                        InlineKeyboardButton("Shadow Offset: +10", callback_data='shadow_offset_10'),
-                        InlineKeyboardButton("Shadow Offset: +5", callback_data='shadow_offset_5')
                     ]
                 ]
             )
@@ -138,6 +124,46 @@ async def handle_callback_query(client, callback_query):
             )
             await callback_query.answer()
 
+        elif data == 'shadow_options':
+            await callback_query.message.reply_text(
+                "Shadow Options:",
+                reply_markup=InlineKeyboardMarkup(
+                    [
+                        [InlineKeyboardButton("Enable/Disable Shadow", callback_data='toggle_shadow')],
+                        [
+                            InlineKeyboardButton("Increase Shadow Size", callback_data='increase_shadow_size'),
+                            InlineKeyboardButton("Decrease Shadow Size", callback_data='decrease_shadow_size')
+                        ],
+                        [InlineKeyboardButton("Change Shadow Color", callback_data='shadow_colors')],
+                        [
+                            InlineKeyboardButton("Increase Shadow Offset", callback_data='increase_shadow_offset'),
+                            InlineKeyboardButton("Decrease Shadow Offset", callback_data='decrease_shadow_offset')
+                        ]
+                    ]
+                )
+            )
+            await callback_query.answer()
+
+        elif data == 'inner_shadow_options':
+            await callback_query.message.reply_text(
+                "Inner Shadow Options:",
+                reply_markup=InlineKeyboardMarkup(
+                    [
+                        [InlineKeyboardButton("Enable/Disable Inner Shadow", callback_data='toggle_inner_shadow')],
+                        [
+                            InlineKeyboardButton("Increase Inner Shadow Size", callback_data='increase_inner_shadow_size'),
+                            InlineKeyboardButton("Decrease Inner Shadow Size", callback_data='decrease_inner_shadow_size')
+                        ],
+                        [InlineKeyboardButton("Change Inner Shadow Color", callback_data='inner_shadow_colors')],
+                        [
+                            InlineKeyboardButton("Increase Inner Shadow Offset", callback_data='increase_inner_shadow_offset'),
+                            InlineKeyboardButton("Decrease Inner Shadow Offset", callback_data='decrease_inner_shadow_offset')
+                        ]
+                    ]
+                )
+            )
+            await callback_query.answer()
+
         elif data == 'toggle_stroke':
             users_data[chat_id]['stroke_enabled'] = not users_data[chat_id].get('stroke_enabled', False)
             status = "enabled" if users_data[chat_id]['stroke_enabled'] else "disabled"
@@ -167,6 +193,82 @@ async def handle_callback_query(client, callback_query):
                 )
             )
             await callback_query.answer()
+
+        elif data == 'increase_shadow_size':
+            users_data[chat_id]['shadow_size'] += 1
+            await callback_query.answer(f"Shadow size increased to {users_data[chat_id]['shadow_size']}!", show_alert=True)
+
+        elif data == 'decrease_shadow_size':
+            current_size = users_data[chat_id].get('shadow_size', 1)
+            if current_size > 1:
+                users_data[chat_id]['shadow_size'] -= 1
+                await callback_query.answer(f"Shadow size decreased to {users_data[chat_id]['shadow_size']}!", show_alert=True)
+            else:
+                await callback_query.answer("Shadow size cannot be less than 1!", show_alert=True)
+        
+        elif data == 'shadow_colors':
+            await callback_query.message.reply_text(
+                "Select Shadow Color:",
+                reply_markup=InlineKeyboardMarkup(
+                    [
+                        [InlineKeyboardButton("Black", callback_data='shadow_color_black')],
+                        [InlineKeyboardButton("Gray", callback_data='shadow_color_gray')],
+                        [InlineKeyboardButton("Red", callback_data='shadow_color_red')],
+                        [InlineKeyboardButton("Green", callback_data='shadow_color_green')]
+                    ]
+                )
+            )
+            await callback_query.answer()
+
+        elif data == 'increase_shadow_offset':
+            current_offset = users_data[chat_id].get('shadow_offset', (5, 5))
+            new_offset = (current_offset[0] + 1, current_offset[1] + 1)
+            users_data[chat_id]['shadow_offset'] = new_offset
+            await callback_query.answer(f"Shadow offset increased to {new_offset}!", show_alert=True)
+
+        elif data == 'decrease_shadow_offset':
+            current_offset = users_data[chat_id].get('shadow_offset', (5, 5))
+            new_offset = (max(0, current_offset[0] - 1), max(0, current_offset[1] - 1))
+            users_data[chat_id]['shadow_offset'] = new_offset
+            await callback_query.answer(f"Shadow offset decreased to {new_offset}!", show_alert=True)
+
+        elif data == 'increase_inner_shadow_size':
+            users_data[chat_id]['inner_shadow_size'] += 1
+            await callback_query.answer(f"Inner shadow size increased to {users_data[chat_id]['inner_shadow_size']}!", show_alert=True)
+
+        elif data == 'decrease_inner_shadow_size':
+            current_size = users_data[chat_id].get('inner_shadow_size', 1)
+            if current_size > 1:
+                users_data[chat_id]['inner_shadow_size'] -= 1
+                await callback_query.answer(f"Inner shadow size decreased to {users_data[chat_id]['inner_shadow_size']}!", show_alert=True)
+            else:
+                await callback_query.answer("Inner shadow size cannot be less than 1!", show_alert=True)
+        
+        elif data == 'inner_shadow_colors':
+            await callback_query.message.reply_text(
+                "Select Inner Shadow Color:",
+                reply_markup=InlineKeyboardMarkup(
+                    [
+                        [InlineKeyboardButton("Black", callback_data='inner_shadow_color_black')],
+                        [InlineKeyboardButton("Gray", callback_data='inner_shadow_color_gray')],
+                        [InlineKeyboardButton("Red", callback_data='inner_shadow_color_red')],
+                        [InlineKeyboardButton("Green", callback_data='inner_shadow_color_green')]
+                    ]
+                )
+            )
+            await callback_query.answer()
+
+        elif data == 'increase_inner_shadow_offset':
+            current_offset = users_data[chat_id].get('inner_shadow_offset', (5, 5))
+            new_offset = (current_offset[0] + 1, current_offset[1] + 1)
+            users_data[chat_id]['inner_shadow_offset'] = new_offset
+            await callback_query.answer(f"Inner shadow offset increased to {new_offset}!", show_alert=True)
+
+        elif data == 'decrease_inner_shadow_offset':
+            current_offset = users_data[chat_id].get('inner_shadow_offset', (5, 5))
+            new_offset = (max(0, current_offset[0] - 1), max(0, current_offset[1] - 1))
+            users_data[chat_id]['inner_shadow_offset'] = new_offset
+            await callback_query.answer(f"Inner shadow offset decreased to {new_offset}!", show_alert=True)
 
         position = users_data[chat_id].get('position', (10, 10))
         normal_step = 5
