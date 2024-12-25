@@ -342,7 +342,6 @@ async def handle_callback_query(client, callback_query):
                             InlineKeyboardButton("Increase 3rd Text Size", callback_data='increase_third_text_size'),
                             InlineKeyboardButton("Decrease 3rd Text Size", callback_data='decrease_third_text_size')
                         ]
-                    ]
                 )
             )
             await callback_query.answer()
