@@ -19,8 +19,8 @@ async def start(client, message):
 @app.on_message(filters.photo)
 async def handle_photo(client, message):
     # Download the image
-    photo = await message.download()
-    with open(photo, "rb") as file:
+    photo_path = await message.download()
+    with open(photo_path, "rb") as file:
         photo_bytes = file.read()
 
     users_data[message.chat.id] = {'photo': photo_bytes, 'position': (10, 10)}
@@ -142,7 +142,7 @@ async def handle_callback_query(client, callback_query):
         img_byte_arr.seek(0)
 
         # Send the image back
-        await client.send_photo(chat_id, img_byte_arr, caption="Here is your logo!")
+        await client.send_photo(chat_id, img_byte_arr, caption="Here is your edited logo!")
         await callback_query.answer("Logo created!", show_alert=True)
 
 app.run()
