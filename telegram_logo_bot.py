@@ -47,6 +47,12 @@ async def handle_text(client, message):
                         InlineKeyboardButton("➡️", callback_data='move_right'),
                         InlineKeyboardButton("⬇️", callback_data='move_down')
                     ],
+                                       [
+                        InlineKeyboardButton("⬆️ Fast Up", callback_data='fast_up'),
+                        InlineKeyboardButton("⬅️ Fast Left", callback_data='fast_left'),
+                        InlineKeyboardButton("➡️ Fast Right", callback_data='fast_right'),
+                        InlineKeyboardButton("⬇️ Fast Down", callback_data='fast_down')
+                    ],
                     [InlineKeyboardButton("Choose Language", callback_data='choose_language')]
                 ]
             )
@@ -128,6 +134,19 @@ async def handle_callback_query(client, callback_query):
             await callback_query.answer()
             return
 
+        if data.startswith("move_") or data.startswith("fast_"):
+            step = fast_step if data.startswith("fast_") else normal_step
+            if data.endswith("up"):
+                position = (position[0], max(0, position[1] - step))
+            elif data.endswith("down"):
+                position = (position[0], position[1] + step)
+            elif data.endswith("left"):
+                position = (max(0, position[0] - step), position[1])
+            elif data.endswith("right"):
+                position = (position[0] + step, position[1])
+            users_data[chat_id]['position'] = position
+            await callback_query.answer("Position updated!")
+            
         if data.startswith('stroke_color_'):
             users_data[chat_id]['stroke_color'] = data.split('_')[2]
             await callback_query.answer(f"Stroke color set to {users_data[chat_id]['stroke_color']}!", show_alert=True)
