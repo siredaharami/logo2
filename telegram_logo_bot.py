@@ -93,9 +93,6 @@ async def handle_text(client, message):
 async def handle_callback_query(client, callback_query):
     data = callback_query.data
     chat_id = callback_query.message.chat.id
-async def handle_callback_query(client, callback_query):
-    data = callback_query.data
-    chat_id = callback_query.message.chat.id
 
     if chat_id in users_data:
         
@@ -196,7 +193,6 @@ async def handle_callback_query(client, callback_query):
             size = int(data.split('_')[2])
             users_data[chat_id]['shadow_size'] = size
             await callback_query.answer(f"Shadow size set to {size}!", show_alert=True)
-            
     
         elif data == 'stroke_options':
             await callback_query.message.reply_text(
