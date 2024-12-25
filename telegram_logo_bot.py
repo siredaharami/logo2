@@ -98,6 +98,75 @@ async def handle_callback_query(client, callback_query):
         if data.startswith('color_'):
             users_data[chat_id]['color'] = data.split('_')[1]
             await callback_query.answer(f"Text color set to {users_data[chat_id]['color']}!", show_alert=True)
+
+        if data == 'move_up':
+            # Move text up
+            users_data[chat_id]['position'] = (users_data[chat_id]['position'][0], users_data[chat_id]['position'][1] - 10)
+            await callback_query.answer("Moved text up", show_alert=True)
+
+        elif data == 'move_down':
+            # Move text down
+            users_data[chat_id]['position'] = (users_data[chat_id]['position'][0], users_data[chat_id]['position'][1] + 10)
+            await callback_query.answer("Moved text down", show_alert=True)
+
+        elif data == 'move_left':
+            # Move text left
+            users_data[chat_id]['position'] = (users_data[chat_id]['position'][0] - 10, users_data[chat_id]['position'][1])
+            await callback_query.answer("Moved text left", show_alert=True)
+
+        elif data == 'move_right':
+            # Move text right
+            users_data[chat_id]['position'] = (users_data[chat_id]['position'][0] + 10, users_data[chat_id]['position'][1])
+            await callback_query.answer("Moved text right", show_alert=True)
+
+        elif data == 'fast_up':
+            # Fast move up
+            users_data[chat_id]['position'] = (users_data[chat_id]['position'][0], users_data[chat_id]['position'][1] - 20)
+            await callback_query.answer("Moved text fast up", show_alert=True)
+
+        elif data == 'fast_down':
+            # Fast move down
+            users_data[chat_id]['position'] = (users_data[chat_id]['position'][0], users_data[chat_id]['position'][1] + 20)
+            await callback_query.answer("Moved text fast down", show_alert=True)
+
+        elif data == 'fast_left':
+            # Fast move left
+            users_data[chat_id]['position'] = (users_data[chat_id]['position'][0] - 20, users_data[chat_id]['position'][1])
+            await callback_query.answer("Moved text fast left", show_alert=True)
+
+        elif data == 'fast_right':
+            # Fast move right
+            users_data[chat_id]['position'] = (users_data[chat_id]['position'][0] + 20, users_data[chat_id]['position'][1])
+            await callback_query.answer("Moved text fast right", show_alert=True)
+
+        # Handle font size adjustments
+        elif data == 'increase_font_2x':
+            users_data[chat_id]['font_size'] += 2
+            await callback_query.answer(f"Increased font size to {users_data[chat_id]['font_size']}", show_alert=True)
+
+        elif data == 'decrease_font_2x':
+            if users_data[chat_id]['font_size'] > 4:
+                users_data[chat_id]['font_size'] -= 2
+                await callback_query.answer(f"Decreased font size to {users_data[chat_id]['font_size']}", show_alert=True)
+            else:
+                await callback_query.answer("Font size too small for further decrease!", show_alert=True)
+
+        elif data == 'increase_font_4x':
+            users_data[chat_id]['font_size'] += 4
+            await callback_query.answer(f"Increased font size to {users_data[chat_id]['font_size']}", show_alert=True)
+
+        elif data == 'decrease_font_4x':
+            if users_data[chat_id]['font_size'] > 5:
+                users_data[chat_id]['font_size'] -= 4
+                await callback_query.answer(f"Decreased font size to {users_data[chat_id]['font_size']}", show_alert=True)
+            else:
+                await callback_query.answer("Font size too small for further decrease!", show_alert=True)
+
+        # Now send the updated image
+        try:
+            await send_edited_image(client, chat_id)
+        except Exception as e:
+            await client.send_message(chat_id, f"Error while updating image: {e}")
         
         elif data == 'toggle_shadow':
             users_data[chat_id]['shadow_enabled'] = not users_data[chat_id].get('shadow_enabled', False)
