@@ -521,4 +521,47 @@ async def send_edited_image(client, chat_id):
 
     await client.send_photo(chat_id, img_byte_arr, caption="Here is your edited logo!")
 
+
+from pyrogram import Client, filters
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+
+# Create a new Client instance
+
+# Handler for text messages to generate initial inline buttons
+@app.on_message(filters.text & ~filters.command("start2"))
+def text_handler(client, message):
+    reply_markup = InlineKeyboardMarkup(
+        [
+            [InlineKeyboardButton("Create Logo 🌸", callback_data="create_logo")],
+            [InlineKeyboardButton("Cancel ❌", callback_data="cancel")]
+        ]
+    )
+    message.reply_text(f"What to do? : {message.text}", reply_markup=reply_markup)
+
+# Callback query handler for button actions
+@app.on_callback_query()
+def callback_query_handler(client, callback_query):
+    if callback_query.data == "create_logo":
+        logo_choices_markup = InlineKeyboardMarkup(
+            [
+                [InlineKeyboardButton("Text on wet glass", callback_data="logo_wet_glass"),
+                 InlineKeyboardButton("Colorful neon text", callback_data="logo_neon")],
+                [InlineKeyboardButton("Glossy silver text", callback_data="logo_silver"),
+                 InlineKeyboardButton("Digital glitch text", callback_data="logo_glitch")],
+                # Add more rows for different logo types as needed
+            ]
+        )
+        callback_query.message.edit_text(f"Choose Logos : {callback_query.message.text.split(':')[1].strip()}", reply_markup=logo_choices_markup)
+
+    elif callback_query.data == "cancel":
+        callback_query.message.edit_text("Operation cancelled.")
+
+    # Add additional callbacks for each logo choice
+    elif callback_query.data.startswith("logo_"):
+        # Extract the specific logo type from the callback data
+        logo_type = callback_query.data.split("_")[1]
+        # Placeholder response, replace with actual image or process
+        callback_query.message.edit_text(f"Creating {logo_type.replace('_', ' ')} logo...")
+
+# Run the bot
 app.run()
