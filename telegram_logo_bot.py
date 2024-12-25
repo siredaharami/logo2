@@ -93,12 +93,13 @@ async def handle_text(client, message):
 async def handle_callback_query(client, callback_query):
     data = callback_query.data
     chat_id = callback_query.message.chat.id
+async def handle_callback_query(client, callback_query):
+    data = callback_query.data
+    chat_id = callback_query.message.chat.id
 
     if chat_id in users_data:
-        if data.startswith('color_'):
-            users_data[chat_id]['color'] = data.split('_')[1]
-            await callback_query.answer(f"Text color set to {users_data[chat_id]['color']}!", show_alert=True)
-
+        
+        # Handle text movement
         if data == 'move_up':
             # Move text up
             users_data[chat_id]['position'] = (users_data[chat_id]['position'][0], users_data[chat_id]['position'][1] - 10)
@@ -167,6 +168,10 @@ async def handle_callback_query(client, callback_query):
             await send_edited_image(client, chat_id)
         except Exception as e:
             await client.send_message(chat_id, f"Error while updating image: {e}")
+            
+        elif data.startswith('color_'):
+            users_data[chat_id]['color'] = data.split('_')[1]
+            await callback_query.answer(f"Text color set to {users_data[chat_id]['color']}!", show_alert=True)
         
         elif data == 'toggle_shadow':
             users_data[chat_id]['shadow_enabled'] = not users_data[chat_id].get('shadow_enabled', False)
@@ -191,6 +196,7 @@ async def handle_callback_query(client, callback_query):
             size = int(data.split('_')[2])
             users_data[chat_id]['shadow_size'] = size
             await callback_query.answer(f"Shadow size set to {size}!", show_alert=True)
+            
     
         elif data == 'stroke_options':
             await callback_query.message.reply_text(
