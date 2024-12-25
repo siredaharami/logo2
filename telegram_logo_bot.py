@@ -22,15 +22,23 @@ async def handle_photo(client, message):
     with open(photo, "rb") as file:
         photo_bytes = file.read()
 
-    users_data[message.chat.id] = {'photo': photo_bytes, 'position': (10, 10), 'font_size': 40, 'color': 'black'}
+    users_data[message.chat.id] = {
+        'photo': photo_bytes,
+        'position': (10, 10),
+        'font_size': 40,
+        'color': 'black',
+        'stroke_enabled': False,
+        'stroke_width': 2,
+        'stroke_color': 'black',
+        'font_path': "Southam Demo.ttf"
+    }
     await message.reply_text("I got the image! Now send me the text you want to add to the image.")
 
 @app.on_message(filters.text & ~filters.command("start"))
 async def handle_text(client, message):
     chat_id = message.chat.id
     if chat_id in users_data and 'photo' in users_data[chat_id]:
-        text = message.text
-        users_data[chat_id]['text'] = text
+        users_data[chat_id]['text'] = message.text
 
         await message.reply_text(
             "Please choose a color for the text or adjust the position:",
@@ -62,6 +70,7 @@ async def handle_text(client, message):
                 ]
             )
         )
+        await send_edited_image(client, chat_id)
 
 @app.on_callback_query()
 async def handle_callback_query(client, callback_query):
@@ -72,9 +81,8 @@ async def handle_callback_query(client, callback_query):
         if data.startswith('color_'):
             users_data[chat_id]['color'] = data.split('_')[1]
             await callback_query.answer(f"Text color set to {users_data[chat_id]['color']}!", show_alert=True)
-            return
 
-        if data == 'stroke_options':
+        elif data == 'stroke_options':
             await callback_query.message.reply_text(
                 "Stroke Options:",
                 reply_markup=InlineKeyboardMarkup(
@@ -89,29 +97,25 @@ async def handle_callback_query(client, callback_query):
                 )
             )
             await callback_query.answer()
-            return
 
-        if data == 'toggle_stroke':
+        elif data == 'toggle_stroke':
             users_data[chat_id]['stroke_enabled'] = not users_data[chat_id].get('stroke_enabled', False)
             status = "enabled" if users_data[chat_id]['stroke_enabled'] else "disabled"
             await callback_query.answer(f"Stroke {status}!", show_alert=True)
-            return
 
-        if data == 'increase_stroke':
-            users_data[chat_id]['stroke_width'] = users_data[chat_id].get('stroke_width', 2) + 1
+        elif data == 'increase_stroke':
+            users_data[chat_id]['stroke_width'] += 1
             await callback_query.answer(f"Stroke size increased to {users_data[chat_id]['stroke_width']}!", show_alert=True)
-            return
 
-        if data == 'decrease_stroke':
+        elif data == 'decrease_stroke':
             current_size = users_data[chat_id].get('stroke_width', 1)
             if current_size > 1:
-                users_data[chat_id]['stroke_width'] = current_size - 1
+                users_data[chat_id]['stroke_width'] -= 1
                 await callback_query.answer(f"Stroke size decreased to {users_data[chat_id]['stroke_width']}!", show_alert=True)
             else:
                 await callback_query.answer("Stroke size cannot be less than 1!", show_alert=True)
-            return
 
-        if data == 'stroke_colors':
+        elif data == 'stroke_colors':
             await callback_query.message.reply_text(
                 "Select Stroke Color:",
                 reply_markup=InlineKeyboardMarkup(
@@ -123,9 +127,7 @@ async def handle_callback_query(client, callback_query):
                 )
             )
             await callback_query.answer()
-            return
 
-        # Text movement logic
         position = users_data[chat_id].get('position', (10, 10))
         normal_step = 5
         fast_step = 20
@@ -146,58 +148,49 @@ async def handle_callback_query(client, callback_query):
         if data.startswith('stroke_color_'):
             users_data[chat_id]['stroke_color'] = data.split('_')[2]
             await callback_query.answer(f"Stroke color set to {users_data[chat_id]['stroke_color']}!", show_alert=True)
-            return
 
-        # Font size adjustment logic
         if data.startswith('increase_font_'):
             factor = int(data.split('_')[2][:-1])
             current_size = users_data[chat_id].get('font_size', 40)
             users_data[chat_id]['font_size'] = current_size * factor
             await callback_query.answer(f"Font size increased to {users_data[chat_id]['font_size']}!", show_alert=True)
-            return
 
-        if data.startswith('decrease_font_'):
+        elif data.startswith('decrease_font_'):
             factor = int(data.split('_')[2][:-1])
             current_size = users_data[chat_id].get('font_size', 40)
-            if current_size // factor >= 10:  # Making sure font size doesn't go below a sensible limit
+            if current_size // factor >= 10:
                 users_data[chat_id]['font_size'] = current_size // factor
                 await callback_query.answer(f"Font size decreased to {users_data[chat_id]['font_size']}!", show_alert=True)
             else:
                 await callback_query.answer("Font size cannot be too small!", show_alert=True)
-            return
 
-    # Proceeding with image processing after handling callbacks
-    if 'photo' in users_data[chat_id] and 'text' in users_data[chat_id]:
-        photo_data = users_data[chat_id]['photo']
-        text = users_data[chat_id]['text']
-        position = users_data[chat_id].get('position', (10, 10))
-        color = users_data[chat_id].get('color', 'black')
-        font_path = users_data[chat_id].get('font', "Southam Demo.ttf")
-        shadow = users_data[chat_id].get('shadow', False)
-        stroke_color = users_data[chat_id].get('stroke_color', 'black')
-        stroke_width = users_data[chat_id].get('stroke_width', 2)
-        stroke_enabled = users_data[chat_id].get('stroke_enabled', False)
-        font_size = users_data[chat_id].get('font_size', 40)
+        await send_edited_image(client, chat_id)
 
-        image = Image.open(io.BytesIO(photo_data))
-        draw = ImageDraw.Draw(image)
-        font = ImageFont.truetype(font_path, font_size)
+async def send_edited_image(client, chat_id):
+    user_data = users_data[chat_id]
+    photo_data = user_data['photo']
+    text = user_data.get('text', '')
+    position = user_data.get('position', (10, 10))
+    color = user_data.get('color', 'black')
+    font_path = user_data.get('font_path', "Southam Demo.ttf")
+    stroke_color = user_data.get('stroke_color', 'black')
+    stroke_width = user_data.get('stroke_width', 2)
+    stroke_enabled = user_data.get('stroke_enabled', False)
+    font_size = user_data.get('font_size', 40)
 
-        if shadow:
-            shadow_offset = (2, 2)
-            shadow_position = (position[0] + shadow_offset[0], position[1] + shadow_offset[1])
-            draw.text(shadow_position, text, fill="grey", font=font)
+    image = Image.open(io.BytesIO(photo_data))
+    draw = ImageDraw.Draw(image)
+    font = ImageFont.truetype(font_path, font_size)
 
-        if stroke_enabled:
-            draw.text(position, text, fill=color, font=font, stroke_width=stroke_width, stroke_fill=stroke_color)
-        else:
-            draw.text(position, text, fill=color, font=font)
+    if stroke_enabled:
+        draw.text(position, text, fill=color, font=font, stroke_width=stroke_width, stroke_fill=stroke_color)
+    else:
+        draw.text(position, text, fill=color, font=font)
 
-        img_byte_arr = io.BytesIO()
-        image.save(img_byte_arr, format='PNG')
-        img_byte_arr.seek(0)
+    img_byte_arr = io.BytesIO()
+    image.save(img_byte_arr, format='PNG')
+    img_byte_arr.seek(0)
 
-        await client.send_photo(chat_id, img_byte_arr, caption="Here is your edited logo!")
-        await callback_query.answer("Edit applied!")
+    await client.send_photo(chat_id, img_byte_arr, caption="Here is your edited logo!")
 
 app.run()
