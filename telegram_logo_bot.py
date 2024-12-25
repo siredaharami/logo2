@@ -66,7 +66,23 @@ async def handle_text(client, message):
                     [
                         InlineKeyboardButton("Increase Size 4×", callback_data='increase_font_4x'), 
                         InlineKeyboardButton("Decrease Size 4×", callback_data='decrease_font_4x')
-                    ]
+                    ],
+                    [
+    InlineKeyboardButton("Enable Shadow", callback_data='toggle_shadow'),
+    InlineKeyboardButton("Enable Inner Shadow", callback_data='toggle_inner_shadow')
+],
+[
+    InlineKeyboardButton("Shadow Color: Gray", callback_data='shadow_color_gray'),
+    InlineKeyboardButton("Shadow Color: Black", callback_data='shadow_color_black')
+],
+[
+    InlineKeyboardButton("Increase Shadow Size", callback_data='shadow_size_5'),
+    InlineKeyboardButton("Decrease Shadow Size", callback_data='shadow_size_2')
+],
+[
+    InlineKeyboardButton("Shadow Offset: +10", callback_data='shadow_offset_10'),
+    InlineKeyboardButton("Shadow Offset: +5", callback_data='shadow_offset_5')
+]
                 ]
             )
         )
@@ -81,7 +97,31 @@ async def handle_callback_query(client, callback_query):
         if data.startswith('color_'):
             users_data[chat_id]['color'] = data.split('_')[1]
             await callback_query.answer(f"Text color set to {users_data[chat_id]['color']}!", show_alert=True)
+        
+        elif data == 'toggle_shadow':
+    users_data[chat_id]['shadow_enabled'] = not users_data[chat_id].get('shadow_enabled', False)
+    status = "enabled" if users_data[chat_id]['shadow_enabled'] else "disabled"
+    await callback_query.answer(f"Shadow {status}!", show_alert=True)
 
+elif data == 'toggle_inner_shadow':
+    users_data[chat_id]['inner_shadow_enabled'] = not users_data[chat_id].get('inner_shadow_enabled', False)
+    status = "enabled" if users_data[chat_id]['inner_shadow_enabled'] else "disabled"
+    await callback_query.answer(f"Inner Shadow {status}!", show_alert=True)
+
+elif data.startswith('shadow_color_'):
+    users_data[chat_id]['shadow_color'] = data.split('_')[2]
+    await callback_query.answer(f"Shadow color set to {users_data[chat_id]['shadow_color']}!", show_alert=True)
+
+elif data.startswith('shadow_offset_'):
+    offset = int(data.split('_')[2])
+    users_data[chat_id]['shadow_offset'] = (offset, offset)
+    await callback_query.answer(f"Shadow offset set to {offset}!", show_alert=True)
+
+elif data.startswith('shadow_size_'):
+    size = int(data.split('_')[2])
+    users_data[chat_id]['shadow_size'] = size
+    await callback_query.answer(f"Shadow size set to {size}!", show_alert=True)
+    
         elif data == 'stroke_options':
             await callback_query.message.reply_text(
                 "Stroke Options:",
@@ -177,11 +217,30 @@ async def send_edited_image(client, chat_id):
     stroke_width = user_data.get('stroke_width', 2)
     stroke_enabled = user_data.get('stroke_enabled', False)
     font_size = user_data.get('font_size', 40)
+    shadow_enabled = user_data.get('shadow_enabled', False)
+    inner_shadow_enabled = user_data.get('inner_shadow_enabled', False)
+    shadow_color = user_data.get('shadow_color', 'gray')
+    shadow_offset = user_data.get('shadow_offset', (5, 5))
+    shadow_size = user_data.get('shadow_size', 3)
 
     image = Image.open(io.BytesIO(photo_data))
     draw = ImageDraw.Draw(image)
     font = ImageFont.truetype(font_path, font_size)
 
+    # Apply shadow
+    if shadow_enabled:
+        shadow_position = (position[0] + shadow_offset[0], position[1] + shadow_offset[1])
+        for x in range(-shadow_size, shadow_size + 1):
+            for y in range(-shadow_size, shadow_size + 1):
+                draw.text((shadow_position[0] + x, shadow_position[1] + y), text, fill=shadow_color, font=font)
+
+    # Apply inner shadow
+    if inner_shadow_enabled:
+        for x in range(-shadow_size, shadow_size + 1):
+            for y in range(-shadow_size, shadow_size + 1):
+                draw.text((position[0] - x, position[1] - y), text, fill=shadow_color, font=font)
+
+    # Apply text with stroke or normal text
     if stroke_enabled:
         draw.text(position, text, fill=color, font=font, stroke_width=stroke_width, stroke_fill=stroke_color)
     else:
