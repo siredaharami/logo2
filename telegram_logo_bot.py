@@ -68,21 +68,21 @@ async def handle_text(client, message):
                         InlineKeyboardButton("Decrease Size 4×", callback_data='decrease_font_4x')
                     ],
                     [
-    InlineKeyboardButton("Enable Shadow", callback_data='toggle_shadow'),
-    InlineKeyboardButton("Enable Inner Shadow", callback_data='toggle_inner_shadow')
-],
-[
-    InlineKeyboardButton("Shadow Color: Gray", callback_data='shadow_color_gray'),
-    InlineKeyboardButton("Shadow Color: Black", callback_data='shadow_color_black')
-],
-[
-    InlineKeyboardButton("Increase Shadow Size", callback_data='shadow_size_5'),
-    InlineKeyboardButton("Decrease Shadow Size", callback_data='shadow_size_2')
-],
-[
-    InlineKeyboardButton("Shadow Offset: +10", callback_data='shadow_offset_10'),
-    InlineKeyboardButton("Shadow Offset: +5", callback_data='shadow_offset_5')
-]
+                        InlineKeyboardButton("Enable Shadow", callback_data='toggle_shadow'),
+                        InlineKeyboardButton("Enable Inner Shadow", callback_data='toggle_inner_shadow')
+                    ],
+                    [
+                        InlineKeyboardButton("Shadow Color: Gray", callback_data='shadow_color_gray'),
+                        InlineKeyboardButton("Shadow Color: Black", callback_data='shadow_color_black')
+                    ],
+                    [
+                        InlineKeyboardButton("Increase Shadow Size", callback_data='shadow_size_5'),
+                        InlineKeyboardButton("Decrease Shadow Size", callback_data='shadow_size_2')
+                    ],
+                    [
+                        InlineKeyboardButton("Shadow Offset: +10", callback_data='shadow_offset_10'),
+                        InlineKeyboardButton("Shadow Offset: +5", callback_data='shadow_offset_5')
+                    ]
                 ]
             )
         )
@@ -99,28 +99,28 @@ async def handle_callback_query(client, callback_query):
             await callback_query.answer(f"Text color set to {users_data[chat_id]['color']}!", show_alert=True)
         
         elif data == 'toggle_shadow':
-    users_data[chat_id]['shadow_enabled'] = not users_data[chat_id].get('shadow_enabled', False)
-    status = "enabled" if users_data[chat_id]['shadow_enabled'] else "disabled"
-    await callback_query.answer(f"Shadow {status}!", show_alert=True)
+            users_data[chat_id]['shadow_enabled'] = not users_data[chat_id].get('shadow_enabled', False)
+            status = "enabled" if users_data[chat_id]['shadow_enabled'] else "disabled"
+            await callback_query.answer(f"Shadow {status}!", show_alert=True)
 
-elif data == 'toggle_inner_shadow':
-    users_data[chat_id]['inner_shadow_enabled'] = not users_data[chat_id].get('inner_shadow_enabled', False)
-    status = "enabled" if users_data[chat_id]['inner_shadow_enabled'] else "disabled"
-    await callback_query.answer(f"Inner Shadow {status}!", show_alert=True)
+        elif data == 'toggle_inner_shadow':
+            users_data[chat_id]['inner_shadow_enabled'] = not users_data[chat_id].get('inner_shadow_enabled', False)
+            status = "enabled" if users_data[chat_id]['inner_shadow_enabled'] else "disabled"
+            await callback_query.answer(f"Inner Shadow {status}!", show_alert=True)
 
-elif data.startswith('shadow_color_'):
-    users_data[chat_id]['shadow_color'] = data.split('_')[2]
-    await callback_query.answer(f"Shadow color set to {users_data[chat_id]['shadow_color']}!", show_alert=True)
+        elif data.startswith('shadow_color_'):
+            users_data[chat_id]['shadow_color'] = data.split('_')[2]
+            await callback_query.answer(f"Shadow color set to {users_data[chat_id]['shadow_color']}!", show_alert=True)
 
-elif data.startswith('shadow_offset_'):
-    offset = int(data.split('_')[2])
-    users_data[chat_id]['shadow_offset'] = (offset, offset)
-    await callback_query.answer(f"Shadow offset set to {offset}!", show_alert=True)
+        elif data.startswith('shadow_offset_'):
+            offset = int(data.split('_')[2])
+            users_data[chat_id]['shadow_offset'] = (offset, offset)
+            await callback_query.answer(f"Shadow offset set to {offset}!", show_alert=True)
 
-elif data.startswith('shadow_size_'):
-    size = int(data.split('_')[2])
-    users_data[chat_id]['shadow_size'] = size
-    await callback_query.answer(f"Shadow size set to {size}!", show_alert=True)
+        elif data.startswith('shadow_size_'):
+            size = int(data.split('_')[2])
+            users_data[chat_id]['shadow_size'] = size
+            await callback_query.answer(f"Shadow size set to {size}!", show_alert=True)
     
         elif data == 'stroke_options':
             await callback_query.message.reply_text(
