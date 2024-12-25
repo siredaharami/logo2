@@ -357,7 +357,6 @@ async def handle_callback_query(client, callback_query):
             await callback_query.message.reply_text(
                 "Select Font:",
                 reply_markup=InlineKeyboardMarkup(
-                    elif data == 'font_options':
                     [
                         [InlineKeyboardButton("Font 1", callback_data='font_1')],
                         [InlineKeyboardButton("Font 2", callback_data='font_2')],
