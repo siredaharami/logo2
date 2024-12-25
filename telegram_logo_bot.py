@@ -4,9 +4,10 @@ from PIL import Image, ImageDraw, ImageFont
 import io
 
 # Replace with your own values
-api_id = 'YOUR_API_ID'
-api_hash = 'YOUR_API_HASH'
-bot_token = 'YOUR_BOT_TOKEN'
+api_id = 25742938
+api_hash = "b35b715fe8dc0a58e8048988286fc5b6"
+bot_token = "7796646089:AAG3yoXJRSI-D2A5w1kPraju_qpL_Xt3JO8"
+
 
 app = Client("logo_maker_bot", api_id=api_id, api_hash=api_hash, bot_token=bot_token)
 
