@@ -22,7 +22,7 @@ async def handle_photo(client, message):
     with open(photo, "rb") as file:
         photo_bytes = file.read()
 
-    users_data[message.chat.id] = {'photo': photo_bytes, 'position': (10, 10), 'font_size': 40}  # Set default font size
+    users_data[message.chat.id] = {'photo': photo_bytes, 'position': (10, 10)}
     await message.reply_text("I got the image! Now send me the text you want to add to the image.")
 
 @app.on_message(filters.text & ~filters.command("start"))
@@ -38,16 +38,20 @@ async def handle_text(client, message):
                 [
                     [InlineKeyboardButton("♥️ Red", callback_data='color_red'), InlineKeyboardButton("💚 Green", callback_data='color_green')],
                     [InlineKeyboardButton("💙 Blue", callback_data='color_blue'), InlineKeyboardButton("🖤 Black", callback_data='color_black')],
-                    [InlineKeyboardButton("Increase Text Size", callback_data='increase_font_size')],
-                    [InlineKeyboardButton("Decrease Text Size", callback_data='decrease_font_size')],
                     [InlineKeyboardButton("Choose Font", callback_data='choose_font')],
                     [InlineKeyboardButton("Add Shadow", callback_data='add_shadow')],
                     [InlineKeyboardButton("Choose Stroke Color", callback_data='choose_stroke')],
                     [
-                        InlineKeyboardButton("⬆️", callback_data='move_up'),
-                        InlineKeyboardButton("⬅️", callback_data='move_left'),
-                        InlineKeyboardButton("➡️", callback_data='move_right'),
-                        InlineKeyboardButton("⬇️", callback_data='move_down')
+                        InlineKeyboardButton("⬆️ Move Up", callback_data='move_up'),
+                        InlineKeyboardButton("⬅️ Move Left", callback_data='move_left'),
+                        InlineKeyboardButton("➡️ Move Right", callback_data='move_right'),
+                        InlineKeyboardButton("⬇️ Move Down", callback_data='move_down')
+                    ],
+                    [
+                        InlineKeyboardButton("⬆️ Fast Up", callback_data='fast_up'),
+                        InlineKeyboardButton("⬅️ Fast Left", callback_data='fast_left'),
+                        InlineKeyboardButton("➡️ Fast Right", callback_data='fast_right'),
+                        InlineKeyboardButton("⬇️ Fast Down", callback_data='fast_down')
                     ],
                     [InlineKeyboardButton("Choose Language", callback_data='choose_language')]
                 ]
@@ -83,35 +87,24 @@ async def handle_callback_query(client, callback_query):
         text = users_data[chat_id]['text']
         position = users_data[chat_id].get('position', (10, 10))
 
-        move_step = 10
-
+        normal_step = 10
+        fast_step = 40
         color = users_data[chat_id].get('color', 'black')
         font_path = users_data[chat_id].get('font', "Southam Demo.ttf")
         shadow = users_data[chat_id].get('shadow', False)
         stroke_color = users_data[chat_id].get('stroke_color', 'black')
         stroke_width = 2
 
-        font_size = users_data[chat_id].get('font_size', 40)
-
-        if data == "increase_font_size":
-            font_size += 5
-            users_data[chat_id]['font_size'] = font_size
-            await callback_query.answer(f"Font size increased to {font_size}!")
-
-        if data == "decrease_font_size":
-            font_size = max(5, font_size - 5)  # Prevent size below 5
-            users_data[chat_id]['font_size'] = font_size
-            await callback_query.answer(f"Font size decreased to {font_size}!")
-
-        if data.startswith("move_"):
-            if data == "move_up":
-                position = (position[0], max(0, position[1] - move_step))
-            elif data == "move_down":
-                position = (position[0], position[1] + move_step)
-            elif data == "move_left":
-                position = (max(0, position[0] - move_step), position[1])
-            elif data == "move_right":
-                position = (position[0] + move_step, position[1])
+        if data.startswith("move_") or data.startswith("fast_"):
+            step = fast_step if data.startswith("fast_") else normal_step
+            if data.endswith("up"):
+                position = (position[0], max(0, position[1] - step))
+            elif data.endswith("down"):
+                position = (position[0], position[1] + step)
+            elif data.endswith("left"):
+                position = (max(0, position[0] - step), position[1])
+            elif data.endswith("right"):
+                position = (position[0] + step, position[1])
             users_data[chat_id]['position'] = position
             await callback_query.answer("Position updated!")
 
@@ -139,7 +132,7 @@ async def handle_callback_query(client, callback_query):
 
         image = Image.open(io.BytesIO(photo_data))
         draw = ImageDraw.Draw(image)
-        font = ImageFont.truetype(font_path, font_size)
+        font = ImageFont.truetype(font_path, 40)
 
         if shadow:
             shadow_offset = (2, 2)
