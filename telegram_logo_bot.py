@@ -309,8 +309,9 @@ async def handle_callback_query(client, callback_query):
             else:
                 await callback_query.answer("Font size cannot be too small!", show_alert=True)
 
-        await send_edited_image(client, chat_id)
-
+        # Now send the updated image
+        try:
+            await send_edited_image(client, chat_id)
         except Exception as e:
             await client.send_message(chat_id, f"Error while updating image: {e}")
 
