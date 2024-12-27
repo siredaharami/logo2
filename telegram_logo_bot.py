@@ -1,6 +1,6 @@
 from pyrogram import Client, filters
 from pyrogram.types import InlineKeyboardButton, InlineKeyboardMarkup
-from PIL import Image, ImageDraw, ImageFont, ImageEnhance
+from PIL import Image, ImageDraw, ImageFont
 import io
 
 # Replace with your own values
@@ -30,17 +30,7 @@ async def handle_photo(client, message):
         'stroke_enabled': False,
         'stroke_width': 2,
         'stroke_color': 'black',
-        'font_path': "Southam Demo.ttf",
-        'bg_color': (255, 255, 255, 0),
-        'bg_opacity': 1.0,
-        'emboss_enabled': False,
-        'text_opacity': 1.0,
-        'third_text': {
-            'text': '',
-            'enabled': False,
-            'color': 'black',
-            'size': 40
-        }
+        'font_path': "Southam Demo.ttf"
     }
     await message.reply_text("I got the image! Now send me the text you want to add to the image.")
 
@@ -56,11 +46,12 @@ async def handle_text(client, message):
                 [
                     [InlineKeyboardButton("♥️ Red", callback_data='color_red'), InlineKeyboardButton("💚 Green", callback_data='color_green')],
                     [InlineKeyboardButton("💙 Blue", callback_data='color_blue'), InlineKeyboardButton("🖤 Black", callback_data='color_black')],
+                    [InlineKeyboardButton("🟡 Yellow", callback_data='color_yellow'), InlineKeyboardButton("🟠 Orange", callback_data='color_orange')],
+                    [InlineKeyboardButton("🟣 Purple", callback_data='color_purple'), InlineKeyboardButton("⚪ White", callback_data='color_white')],
+                    [InlineKeyboardButton("⚫ Gray", callback_data='color_gray'), InlineKeyboardButton("🟤 Brown", callback_data='color_brown')],
                     [InlineKeyboardButton("Stroke Options", callback_data='stroke_options')],
                     [InlineKeyboardButton("Shadow Options", callback_data='shadow_options')],
                     [InlineKeyboardButton("Inner Shadow Options", callback_data='inner_shadow_options')],
-                    [InlineKeyboardButton("Background Options", callback_data='background_options')],
-                    [InlineKeyboardButton("Emboss Options", callback_data='emboss_options')],
                     [
                         InlineKeyboardButton("⬆️", callback_data='move_up'),
                         InlineKeyboardButton("⬅️", callback_data='move_left'),
@@ -80,10 +71,7 @@ async def handle_text(client, message):
                     [
                         InlineKeyboardButton("Increase Size 4×", callback_data='increase_font_4x'), 
                         InlineKeyboardButton("Decrease Size 4×", callback_data='decrease_font_4x')
-                    ],
-                    [InlineKeyboardButton("Opacity Options", callback_data='opacity_options')],
-                    [InlineKeyboardButton("Font Options", callback_data='font_options')],
-                    [InlineKeyboardButton("3rd Text Options", callback_data='third_text_options')]
+                    ]
                 ]
             )
         )
@@ -95,74 +83,234 @@ async def handle_callback_query(client, callback_query):
     chat_id = callback_query.message.chat.id
 
     if chat_id in users_data:
+        if data.startswith('color_'):
+            users_data[chat_id]['color'] = data.split('_')[1]
+            await callback_query.answer(f"Text color set to {users_data[chat_id]['color']}!", show_alert=True)
         
-        # Handle text movement
-        if data == 'move_up':
-            # Move text up
-            users_data[chat_id]['position'] = (users_data[chat_id]['position'][0], users_data[chat_id]['position'][1] - 10)
-            await callback_query.answer("Moved text up", show_alert=True)
+        elif data == 'toggle_shadow':
+            users_data[chat_id]['shadow_enabled'] = not users_data[chat_id].get('shadow_enabled', False)
+            status = "enabled" if users_data[chat_id]['shadow_enabled'] else "disabled"
+            await callback_query.answer(f"Shadow {status}!", show_alert=True)
 
-        elif data == 'move_down':
-            # Move text down
-            users_data[chat_id]['position'] = (users_data[chat_id]['position'][0], users_data[chat_id]['position'][1] + 10)
-            await callback_query.answer("Moved text down", show_alert=True)
+        elif data == 'toggle_inner_shadow':
+            users_data[chat_id]['inner_shadow_enabled'] = not users_data[chat_id].get('inner_shadow_enabled', False)
+            status = "enabled" if users_data[chat_id]['inner_shadow_enabled'] else "disabled"
+            await callback_query.answer(f"Inner Shadow {status}!", show_alert=True)
 
-        elif data == 'move_left':
-            # Move text left
-            users_data[chat_id]['position'] = (users_data[chat_id]['position'][0] - 10, users_data[chat_id]['position'][1])
-            await callback_query.answer("Moved text left", show_alert=True)
+        elif data.startswith('shadow_color_'):
+            users_data[chat_id]['shadow_color'] = data.split('_')[2]
+            await callback_query.answer(f"Shadow color set to {users_data[chat_id]['shadow_color']}!", show_alert=True)
 
-        elif data == 'move_right':
-            # Move text right
-            users_data[chat_id]['position'] = (users_data[chat_id]['position'][0] + 10, users_data[chat_id]['position'][1])
-            await callback_query.answer("Moved text right", show_alert=True)
+        elif data.startswith('shadow_offset_'):
+            offset = int(data.split('_')[2])
+            users_data[chat_id]['shadow_offset'] = (offset, offset)
+            await callback_query.answer(f"Shadow offset set to {offset}!", show_alert=True)
 
-        elif data == 'fast_up':
-            # Fast move up
-            users_data[chat_id]['position'] = (users_data[chat_id]['position'][0], users_data[chat_id]['position'][1] - 20)
-            await callback_query.answer("Moved text fast up", show_alert=True)
+        elif data.startswith('shadow_size_'):
+            size = int(data.split('_')[2])
+            users_data[chat_id]['shadow_size'] = size
+            await callback_query.answer(f"Shadow size set to {size}!", show_alert=True)
+    
+        elif data == 'stroke_options':
+            await callback_query.message.reply_text(
+                "Stroke Options:",
+                reply_markup=InlineKeyboardMarkup(
+                    [
+                        [InlineKeyboardButton("Enable/Disable Stroke", callback_data='toggle_stroke')],
+                        [
+                            InlineKeyboardButton("Increase Size", callback_data='increase_stroke'),
+                            InlineKeyboardButton("Decrease Size", callback_data='decrease_stroke')
+                        ],
+                        [InlineKeyboardButton("Change Stroke Color", callback_data='stroke_colors')]
+                    ]
+                )
+            )
+            await callback_query.answer()
 
-        elif data == 'fast_down':
-            # Fast move down
-            users_data[chat_id]['position'] = (users_data[chat_id]['position'][0], users_data[chat_id]['position'][1] + 20)
-            await callback_query.answer("Moved text fast down", show_alert=True)
+        elif data == 'shadow_options':
+            await callback_query.message.reply_text(
+                "Shadow Options:",
+                reply_markup=InlineKeyboardMarkup(
+                    [
+                        [InlineKeyboardButton("Enable/Disable Shadow", callback_data='toggle_shadow')],
+                        [
+                            InlineKeyboardButton("Increase Shadow Size", callback_data='increase_shadow_size'),
+                            InlineKeyboardButton("Decrease Shadow Size", callback_data='decrease_shadow_size')
+                        ],
+                        [InlineKeyboardButton("Change Shadow Color", callback_data='shadow_colors')],
+                        [
+                            InlineKeyboardButton("Increase Shadow Offset", callback_data='increase_shadow_offset'),
+                            InlineKeyboardButton("Decrease Shadow Offset", callback_data='decrease_shadow_offset')
+                        ]
+                    ]
+                )
+            )
+            await callback_query.answer()
 
-        elif data == 'fast_left':
-            # Fast move left
-            users_data[chat_id]['position'] = (users_data[chat_id]['position'][0] - 20, users_data[chat_id]['position'][1])
-            await callback_query.answer("Moved text fast left", show_alert=True)
+        elif data == 'inner_shadow_options':
+            await callback_query.message.reply_text(
+                "Inner Shadow Options:",
+                reply_markup=InlineKeyboardMarkup(
+                    [
+                        [InlineKeyboardButton("Enable/Disable Inner Shadow", callback_data='toggle_inner_shadow')],
+                        [
+                            InlineKeyboardButton("Increase Inner Shadow Size", callback_data='increase_inner_shadow_size'),
+                            InlineKeyboardButton("Decrease Inner Shadow Size", callback_data='decrease_inner_shadow_size')
+                        ],
+                        [InlineKeyboardButton("Change Inner Shadow Color", callback_data='inner_shadow_colors')],
+                        [
+                            InlineKeyboardButton("Increase Inner Shadow Offset", callback_data='increase_inner_shadow_offset'),
+                            InlineKeyboardButton("Decrease Inner Shadow Offset", callback_data='decrease_inner_shadow_offset')
+                        ]
+                    ]
+                )
+            )
+            await callback_query.answer()
 
-        elif data == 'fast_right':
-            # Fast move right
-            users_data[chat_id]['position'] = (users_data[chat_id]['position'][0] + 20, users_data[chat_id]['position'][1])
-            await callback_query.answer("Moved text fast right", show_alert=True)
+        elif data == 'toggle_stroke':
+            users_data[chat_id]['stroke_enabled'] = not users_data[chat_id].get('stroke_enabled', False)
+            status = "enabled" if users_data[chat_id]['stroke_enabled'] else "disabled"
+            await callback_query.answer(f"Stroke {status}!", show_alert=True)
 
-        # Handle font size adjustments
-        elif data == 'increase_font_2x':
-            users_data[chat_id]['font_size'] += 2
-            await callback_query.answer(f"Increased font size to {users_data[chat_id]['font_size']}", show_alert=True)
+        elif data == 'increase_stroke':
+            users_data[chat_id]['stroke_width'] += 1
+            await callback_query.answer(f"Stroke size increased to {users_data[chat_id]['stroke_width']}!", show_alert=True)
 
-        elif data == 'decrease_font_2x':
-            if users_data[chat_id]['font_size'] > 4:
-                users_data[chat_id]['font_size'] -= 2
-                await callback_query.answer(f"Decreased font size to {users_data[chat_id]['font_size']}", show_alert=True)
+        elif data == 'decrease_stroke':
+            current_size = users_data[chat_id].get('stroke_width', 1)
+            if current_size > 1:
+                users_data[chat_id]['stroke_width'] -= 1
+                await callback_query.answer(f"Stroke size decreased to {users_data[chat_id]['stroke_width']}!", show_alert=True)
             else:
-                await callback_query.answer("Font size too small for further decrease!", show_alert=True)
+                await callback_query.answer("Stroke size cannot be less than 1!", show_alert=True)
 
-        elif data == 'increase_font_4x':
-            users_data[chat_id]['font_size'] += 4
-            await callback_query.answer(f"Increased font size to {users_data[chat_id]['font_size']}", show_alert=True)
+        elif data == 'stroke_colors':
+            await callback_query.message.reply_text(
+                "Select Stroke Color:",
+                reply_markup=InlineKeyboardMarkup(
+                    [
+                        [InlineKeyboardButton("Black", callback_data='stroke_color_black')],
+                        [InlineKeyboardButton("Red", callback_data='stroke_color_red')],
+                        [InlineKeyboardButton("Green", callback_data='stroke_color_green')]
+                    ]
+                )
+            )
+            await callback_query.answer()
 
-        elif data == 'decrease_font_4x':
-            if users_data[chat_id]['font_size'] > 5:
-                users_data[chat_id]['font_size'] -= 4
-                await callback_query.answer(f"Decreased font size to {users_data[chat_id]['font_size']}", show_alert=True)
+        elif data == 'increase_shadow_size':
+            users_data[chat_id]['shadow_size'] += 1
+            await callback_query.answer(f"Shadow size increased to {users_data[chat_id]['shadow_size']}!", show_alert=True)
+
+        elif data == 'decrease_shadow_size':
+            current_size = users_data[chat_id].get('shadow_size', 1)
+            if current_size > 1:
+                users_data[chat_id]['shadow_size'] -= 1
+                await callback_query.answer(f"Shadow size decreased to {users_data[chat_id]['shadow_size']}!", show_alert=True)
             else:
-                await callback_query.answer("Font size too small for further decrease!", show_alert=True)
+                await callback_query.answer("Shadow size cannot be less than 1!", show_alert=True)
+        
+        elif data == 'shadow_colors':
+            await callback_query.message.reply_text(
+                "Select Shadow Color:",
+                reply_markup=InlineKeyboardMarkup(
+                    [
+                        [InlineKeyboardButton("Black", callback_data='shadow_color_black')],
+                        [InlineKeyboardButton("Gray", callback_data='shadow_color_gray')],
+                        [InlineKeyboardButton("Red", callback_data='shadow_color_red')],
+                        [InlineKeyboardButton("Green", callback_data='shadow_color_green')]
+                    ]
+                )
+            )
+            await callback_query.answer()
 
-        # Now send the updated image
-        try:
-            await send_edited_image(client, chat_id)
+        elif data == 'increase_shadow_offset':
+            current_offset = users_data[chat_id].get('shadow_offset', (5, 5))
+            new_offset = (current_offset[0] + 1, current_offset[1] + 1)
+            users_data[chat_id]['shadow_offset'] = new_offset
+            await callback_query.answer(f"Shadow offset increased to {new_offset}!", show_alert=True)
+
+        elif data == 'decrease_shadow_offset':
+            current_offset = users_data[chat_id].get('shadow_offset', (5, 5))
+            new_offset = (max(0, current_offset[0] - 1), max(0, current_offset[1] - 1))
+            users_data[chat_id]['shadow_offset'] = new_offset
+            await callback_query.answer(f"Shadow offset decreased to {new_offset}!", show_alert=True)
+
+        elif data == 'increase_inner_shadow_size':
+            users_data[chat_id]['inner_shadow_size'] += 1
+            await callback_query.answer(f"Inner shadow size increased to {users_data[chat_id]['inner_shadow_size']}!", show_alert=True)
+
+        elif data == 'decrease_inner_shadow_size':
+            current_size = users_data[chat_id].get('inner_shadow_size', 1)
+            if current_size > 1:
+                users_data[chat_id]['inner_shadow_size'] -= 1
+                await callback_query.answer(f"Inner shadow size decreased to {users_data[chat_id]['inner_shadow_size']}!", show_alert=True)
+            else:
+                await callback_query.answer("Inner shadow size cannot be less than 1!", show_alert=True)
+        
+        elif data == 'inner_shadow_colors':
+            await callback_query.message.reply_text(
+                "Select Inner Shadow Color:",
+                reply_markup=InlineKeyboardMarkup(
+                    [
+                        [InlineKeyboardButton("Black", callback_data='inner_shadow_color_black')],
+                        [InlineKeyboardButton("Gray", callback_data='inner_shadow_color_gray')],
+                        [InlineKeyboardButton("Red", callback_data='inner_shadow_color_red')],
+                        [InlineKeyboardButton("Green", callback_data='inner_shadow_color_green')]
+                    ]
+                )
+            )
+            await callback_query.answer()
+
+        elif data == 'increase_inner_shadow_offset':
+            current_offset = users_data[chat_id].get('inner_shadow_offset', (5, 5))
+            new_offset = (current_offset[0] + 1, current_offset[1] + 1)
+            users_data[chat_id]['inner_shadow_offset'] = new_offset
+            await callback_query.answer(f"Inner shadow offset increased to {new_offset}!", show_alert=True)
+
+        elif data == 'decrease_inner_shadow_offset':
+            current_offset = users_data[chat_id].get('inner_shadow_offset', (5, 5))
+            new_offset = (max(0, current_offset[0] - 1), max(0, current_offset[1] - 1))
+            users_data[chat_id]['inner_shadow_offset'] = new_offset
+            await callback_query.answer(f"Inner shadow offset decreased to {new_offset}!", show_alert=True)
+
+        position = users_data[chat_id].get('position', (10, 10))
+        normal_step = 5
+        fast_step = 20
+
+        if data.startswith("move_") or data.startswith("fast_"):
+            step = fast_step if data.startswith("fast_") else normal_step
+            if data.endswith("up"):
+                position = (position[0], max(0, position[1] - step))
+            elif data.endswith("down"):
+                position = (position[0], position[1] + step)
+            elif data.endswith("left"):
+                position = (max(0, position[0] - step), position[1])
+            elif data.endswith("right"):
+                position = (position[0] + step, position[1])
+            users_data[chat_id]['position'] = position
+            await callback_query.answer("Position updated!")
+
+        if data.startswith('stroke_color_'):
+            users_data[chat_id]['stroke_color'] = data.split('_')[2]
+            await callback_query.answer(f"Stroke color set to {users_data[chat_id]['stroke_color']}!", show_alert=True)
+
+        if data.startswith('increase_font_'):
+            factor = int(data.split('_')[2][:-1])
+            current_size = users_data[chat_id].get('font_size', 40)
+            users_data[chat_id]['font_size'] = current_size * factor
+            await callback_query.answer(f"Font size increased to {users_data[chat_id]['font_size']}!", show_alert=True)
+
+        elif data.startswith('decrease_font_'):
+            factor = int(data.split('_')[2][:-1])
+            current_size = users_data[chat_id].get('font_size', 40)
+            if current_size // factor >= 10:
+                users_data[chat_id]['font_size'] = current_size // factor
+                await callback_query.answer(f"Font size decreased to {users_data[chat_id]['font_size']}!", show_alert=True)
+            else:
+                await callback_query.answer("Font size cannot be too small!", show_alert=True)
+
+        await send_edited_image(client, chat_id)
+
         except Exception as e:
             await client.send_message(chat_id, f"Error while updating image: {e}")
 
@@ -591,8 +739,4 @@ async def send_edited_image(client, chat_id):
     img_byte_arr.seek(0)
 
     await client.send_photo(chat_id, img_byte_arr, caption="Here is your edited logo!")
-
-
-
-# Run the bot
-app.run()
+    
