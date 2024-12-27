@@ -314,7 +314,7 @@ async def handle_callback_query(client, callback_query):
             await send_edited_image(client, chat_id)
         except Exception as e:
             await client.send_message(chat_id, f"Error while updating image: {e}")
-
+            
         elif data.startswith('color_'):
             users_data[chat_id]['color'] = data.split('_')[1]
             await callback_query.answer(f"Text color set to {users_data[chat_id]['color']}!", show_alert=True)
